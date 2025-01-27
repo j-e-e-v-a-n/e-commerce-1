@@ -1,43 +1,52 @@
-const bodyParser = require("body-parser");
-const express = require("express");
-const dbConnect = require("./config/dbConnect");
-const { notFound, errorHandler } = require("./middlewares/errorHandler");
-const app = express();
-const dotenv = require("dotenv").config();
-const PORT = 5000;
-const authRouter = require("./routes/authRoute");
-const productRouter = require("./routes/productRoute");
-const blogRouter = require("./routes/blogRoute");
-const categoryRouter = require("./routes/prodcategoryRoute");
-const blogcategoryRouter = require("./routes/blogCatRoute");
-const brandRouter = require("./routes/brandRoute");
-const colorRouter = require("./routes/colorRoute");
-const enqRouter = require("./routes/enqRoute");
-const couponRouter = require("./routes/couponRoute");
-const uploadRouter = require("./routes/uploadRoute");
-const cookieParser = require("cookie-parser");
-const morgan = require("morgan");
-const cors = require("cors");
+require("dotenv").config()
+const express=require('express')
+const cors=require('cors')
+const morgan=require("morgan")
+const cookieParser=require("cookie-parser")
+const authRoutes=require("./routes/Auth")
+const productRoutes=require("./routes/Product")
+const orderRoutes=require("./routes/Order")
+const cartRoutes=require("./routes/Cart")
+const brandRoutes=require("./routes/Brand")
+const categoryRoutes=require("./routes/Category")
+const userRoutes=require("./routes/User")
+const addressRoutes=require('./routes/Address')
+const reviewRoutes=require("./routes/Review")
+const wishlistRoutes=require("./routes/Wishlist")
+const { connectToDB } = require("./database/db")
 
-dbConnect();
-app.use(morgan("dev"));
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use("/api/user", authRouter);
-app.use("/api/product", productRouter);
-app.use("/api/blog", blogRouter);
-app.use("/api/category", categoryRouter);
-app.use("/api/blogcategory", blogcategoryRouter);
-app.use("/api/brand", brandRouter);
-app.use("/api/coupon", couponRouter);
-app.use("/api/color", colorRouter);
-app.use("/api/enquiry", enqRouter);
-app.use("/api/upload", uploadRouter);
 
-app.use(notFound);
-app.use(errorHandler);
-app.listen(PORT, () => {
-  console.log(`Server is running  at PORT ${PORT}`);
-});
+// server init
+const server=express()
+
+// database connection
+connectToDB()
+
+
+// middlewares
+server.use(cors({origin:process.env.ORIGIN,credentials:true,exposedHeaders:['X-Total-Count'],methods:['GET','POST','PATCH','DELETE']}))
+server.use(express.json())
+server.use(cookieParser())
+server.use(morgan("tiny"))
+
+// routeMiddleware
+server.use("/auth",authRoutes)
+server.use("/users",userRoutes)
+server.use("/products",productRoutes)
+server.use("/orders",orderRoutes)
+server.use("/cart",cartRoutes)
+server.use("/brands",brandRoutes)
+server.use("/categories",categoryRoutes)
+server.use("/address",addressRoutes)
+server.use("/reviews",reviewRoutes)
+server.use("/wishlist",wishlistRoutes)
+
+
+
+server.get("/",(req,res)=>{
+    res.status(200).json({message:'running'})
+})
+
+server.listen(8000,()=>{
+    console.log('server [STARTED] ~ http://localhost:8000');
+})
