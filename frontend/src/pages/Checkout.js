@@ -130,7 +130,7 @@ const Checkout = () => {
       return;
     }
     const result = await axios.post(
-      "http://e-commerce-1-phi.vercel.app/api/user/order/checkout",
+      "https://e-commerce-1-phi.vercel.app/api/user/order/checkout",
       { amount: totalAmount + 100 },
       config
     );
@@ -158,7 +158,7 @@ const Checkout = () => {
         };
 
         const result = await axios.post(
-          "http://e-commerce-1-phi.vercel.app/api/user/order/paymentVerification",
+          "https://e-commerce-1-phi.vercel.app/api/user/order/paymentVerification",
           data,
           config
         );
